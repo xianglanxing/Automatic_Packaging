@@ -1,0 +1,13 @@
+EnD0D3Sleep=1
+barcodeinputmode=1
+EnFWLEDSetting=1
+En_RDUI=1
+
+debug 处理——打开会加大负载
+EnECCInfo=1
+DumpDebugFile=1
+DumpRAWFile=1
+
+特定转板才会打开，否则会开卡失败
+EnPowerBridge=1
+
