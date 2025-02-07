@@ -12,7 +12,7 @@ import os
 
 sys.path.append(os.path.abspath("./bsx_func"))
 
-import os_func as f
+import Automatic_Packaging.bsx_func.os_func as f
 
 def create_all_dir():
     folder_path = ["2PCIE-分站式SLT包", "3PCIE-一站式SLT包", "4SATA-SLT包", "5需求文件", "6检查记录", "7新包"]
