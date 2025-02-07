@@ -1,8 +1,8 @@
 '''
 Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
 Date: 2024-12-31 15:48:11
-LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
-LastEditTime: 2025-01-17 09:08:31
+LastEditors: bobo.bsx 2286362745@qq.com
+LastEditTime: 2025-02-07 15:56:51
 FilePath: \auto_package\package.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -41,7 +41,7 @@ logging.basicConfig(
 
 
 print("开始打包")
-
+# print(os.getcwd())
 excel_path = f"./5需求文件/生产软件包自动打包需求表格.xlsx"
 excel_data = f.parse_excel(excel_path)
 # excel_data = 0
@@ -52,9 +52,13 @@ def create_all_dir():
     for i in folder_path:
         f.create_directory(i)
 
-    # 解析checklist参数
-    f.force_copy("./bsx_func/checklist.xlsx", CONFIG['checklist_path'])
-    checklist_data = f.parse_and_group_by_filename(CONFIG['checklist_path'])   
+    if(en_check_para):
+        # 解析checklist参数
+        f.force_copy("./bsx_func/checklist.xlsx", CONFIG['checklist_path'])
+        checklist_data = f.parse_and_group_by_filename(CONFIG['checklist_path'])   
+    else:
+        checklist_data = None
+    
 
     # 获取产品信息和包数量
     pcie_data = excel_data['PCIE']
@@ -86,6 +90,20 @@ def parse_temp_range(string):
     
     return min_val, max_val
 
+def parse_config_string(config_str):
+    """
+    解析形如 'key1=value1;key2=value2' 的字符串为字典
+    :param config_str: 输入的配置字符串
+    :return: 解析后的字典
+    """
+    config_dict = {}
+    
+    for pair in config_str.split(";"):
+        if "=" in pair:  # 确保有 `=`
+            key, value = pair.split("=", 1)  # 只分割一次，避免值中含有 `=`
+            config_dict[key.strip()] = value.strip()  # 去掉空格
+    
+    return config_dict
 
 
 
@@ -97,9 +115,17 @@ def set_custom_func(ini_file, pkg_index):
     is_L1_2 = f.get_field_value(pcie_data[1], pcie_data[pkg_index], "开启低功耗")
     logo = f.get_field_value(pcie_data[1], pcie_data[pkg_index], "品牌")
 
+    # 解析K2其他参数
+    other_para = f.get_field_value(pcie_data[1], pcie_data[pkg_index], "K2其他参数")
+    other_para_list = parse_config_string(other_para)
+
     # 修改品牌
     logo_num = sw_logo(logo)
     f.modify_ini_file(ini_file, "FwSetting", "OUITypeIndex", logo_num)
+
+    if(other_para != None):
+        for key, value in other_para_list.items():
+            f.modify_onlyone_ini_file(ini_file, key, value)
 
     # 开启低功耗
     if(is_L1_2 == True):
@@ -480,6 +506,8 @@ def modify_K2_para(ini_path):
     f.modify_ini_file(ini_path, "Setting", "EnPowerBridge", "1")
     f.modify_ini_file(ini_path, "Setting", "MPVersion", "1")
 
+    
+
 
 def check_by_excel(ini_path, check_list_data, target_dict):
     """
@@ -610,8 +638,10 @@ def process_single_package(cur_pkg, pcie_data, product_genX, checklist_data):
 
     SOP_file = f.search_files_by_name("./5需求文件", "SOP")
     release_note = f.search_files_by_name("./5需求文件", "Release")
-    f.copy_file_to_folder(SOP_file[0], f"{dst_pkg_path}")
-    f.copy_file_to_folder(release_note[0], f"{dst_pkg_path}")
+    if SOP_file:
+        f.copy_file_to_folder(SOP_file[0], f"{dst_pkg_path}")
+    if release_note:
+        f.copy_file_to_folder(release_note[0], f"{dst_pkg_path}")
 
 
 if __name__ == "__main__":
