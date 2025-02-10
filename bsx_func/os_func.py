@@ -2,7 +2,7 @@
 Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
 Date: 2024-12-31 15:54:24
 LastEditors: bobo.bsx 2286362745@qq.com
-LastEditTime: 2025-02-07 16:13:06
+LastEditTime: 2025-02-08 10:59:43
 FilePath: \auto_package\bsx_func\os_func.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -13,6 +13,8 @@ import configparser
 import openpyxl
 import pyzipper
 import subprocess
+import time
+from pathlib import Path
 
 from collections import defaultdict
 
@@ -159,6 +161,36 @@ def modify_ini_file_old(file_path, one_para, two_para, dst_str):
         config.write(configfile)
 
 
+def copy_and_remove_folder(source_folder, target_folder):
+    """
+    先将 source_folder 复制到 target_folder，然后删除 source_folder。
+
+    :param source_folder: 源文件夹路径（如 "C:/PC/K1"）
+    :param target_folder: 目标文件夹路径（如 "C:/PC/DCDC/K1"）
+    """
+    # 确保源文件夹存在
+    if not os.path.exists(source_folder):
+        print(f"❌ 源文件夹不存在: {source_folder}")
+        return
+
+    # 确保目标父目录存在
+    os.makedirs(os.path.dirname(target_folder), exist_ok=True)
+
+    # 复制文件夹
+    try:
+        shutil.copytree(source_folder, target_folder)
+        print(f"✅ 复制完成: {source_folder} -> {target_folder}")
+    except FileExistsError:
+        print(f"⚠️ 目标文件夹已存在: {target_folder}，跳过复制")
+    
+    # 删除源文件夹
+    try:
+        shutil.rmtree(source_folder)
+        print(f"🗑️ 已删除原文件夹: {source_folder}")
+    except PermissionError as e:
+        print(f"❌ 删除失败，文件可能被占用: {e}")
+
+
 def modify_ini_file(file_path, one_para, two_para, dst_str):
     """
     修改 ini 文件内容，添加或更新配置，同时保留大小写。
@@ -263,6 +295,8 @@ def copy_folder_contents(source_folder, target_folder):
 
     # 遍历源文件夹的内容
     for item in os.listdir(source_folder):
+        if item == 'Sorting_Log':   # 不处理这个长路径
+            continue
         source_item = os.path.join(source_folder, item)
         target_item = os.path.join(target_folder, item)
 
