@@ -2,7 +2,7 @@
 Author: bobo.bsx 2286362745@qq.com
 Date: 2025-02-07 17:02:44
 LastEditors: bobo.bsx 2286362745@qq.com
-LastEditTime: 2025-02-08 09:50:31
+LastEditTime: 2025-02-10 09:47:46
 FilePath: \Automatic_Packaging\bsx_func\tk_pcie_packing.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -320,13 +320,17 @@ def create_OST(src_OST_path, dst_OST_path, data_index, product_gen): # wait..参
     folder_list = f.get_subfolder_names(src_OST_path)
 
     # 只单纯复制
-    K1_target_name = f.find_strings_in_set(["K1", "RDT", "K1-Buner", "Buner"], folder_list)
+    K1_target_name = f.find_strings_in_set(gl.K1_target_list, folder_list)
+    if not K1_target_name: # 第二次搜索
+        K1_target_name = [s for s in folder_list if "K1" in s]
     if K1_target_name:
         f.copy_folder_contents(rf"{src_OST_path}\{K1_target_name[0]}", rf"{dst_OST_path}\OST\{OST_list[0]}")
         gl.logging.info("已完成OST的K1-Burner打包")
 
     # 复制+修改ini
-    K2_target_name = f.find_strings_in_set(["K2", "MPT"], folder_list)
+    K2_target_name = f.find_strings_in_set(gl.K2_target_list, folder_list)
+    if not K2_target_name: # 第二次搜索
+        K2_target_name = [s for s in folder_list if "K2" in s]
     if K2_target_name:
         f.copy_folder_contents(f"{src_OST_path}/{K2_target_name[0]}", f"{dst_OST_path}/OST/{OST_list[1]}")  
         # 修改ini
@@ -379,9 +383,10 @@ def create_PC(src_PC_path, dst_PC_path, data_index, product_gen):
     PC_list = ["K1-Burner", "K2-MT1", "K3-Update", "MT2", "SLT-100%", "SLT-10%", "CBI"] # 按需创建吧
 
     folder_list = f.get_subfolder_names(src_PC_path)
-    
     # K1，只单纯复制
-    K1_target_name = f.find_strings_in_set(["RDT", "Buner", "K1"], folder_list)
+    K1_target_name = f.find_strings_in_set(gl.K1_target_list, folder_list)
+    if not K1_target_name: # 第二次搜索
+        K1_target_name = [s for s in folder_list if "K1" in s]
     if K1_target_name:
         f.copy_folder_contents(f"{src_PC_path}/{K1_target_name[0]}", f"{dst_PC_path}/PC/{PC_list[0]}")
     else:
@@ -390,7 +395,9 @@ def create_PC(src_PC_path, dst_PC_path, data_index, product_gen):
 
 
     # K2，复制+修改ini
-    K2_target_name = f.find_strings_in_set(["MPT", "K2"], folder_list)
+    K2_target_name = f.find_strings_in_set(gl.K2_target_list, folder_list)
+    if not K2_target_name:
+        K2_target_name = [s for s in folder_list if "K2" in s]
     if K2_target_name:
         f.copy_folder_contents(f"{src_PC_path}/{K2_target_name[0]}", f"{dst_PC_path}/PC/{PC_list[1]}")  
         # 修改ini

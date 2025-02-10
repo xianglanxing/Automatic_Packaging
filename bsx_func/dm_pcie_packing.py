@@ -315,6 +315,8 @@ def create_OST(src_OST_path, dst_OST_path, data_index, product_gen): # wait..参
 
     # 只单纯复制
     K1_target_name = f.find_strings_in_set(gl.K1_target_list, folder_list)
+    if not K1_target_name: # 第二次搜索
+        K1_target_name = [s for s in folder_list if "K1" in s]
     if K1_target_name:
         f.copy_folder_contents(rf"{src_OST_path}/{K1_target_name[0]}", f"{dst_OST_path}/OST/{OST_list[0]}")
         f.copy_and_remove_folder(f"{dst_OST_path}/OST/{OST_list[0]}", f"{dst_OST_path}/OST/DCDC/{OST_list[0]}")
@@ -323,6 +325,8 @@ def create_OST(src_OST_path, dst_OST_path, data_index, product_gen): # wait..参
 
     # 复制+修改ini
     K2_target_name = f.find_strings_in_set(gl.K2_target_list, folder_list)
+    if not K2_target_name: # 第二次搜索
+        K2_target_name = [s for s in folder_list if "K2" in s]
     if K2_target_name:
         f.copy_folder_contents(f"{src_OST_path}/{K2_target_name[0]}", f"{dst_OST_path}/OST/{OST_list[1]}")  
         # 修改ini
@@ -381,6 +385,8 @@ def create_PC(src_PC_path, dst_PC_path, data_index, product_gen):
     
     # K1，只单纯复制
     K1_target_name = f.find_strings_in_set(gl.K1_target_list, folder_list)
+    if not K1_target_name: # 第二次搜索
+        K1_target_name = [s for s in folder_list if "K1" in s]
     if K1_target_name:
         f.copy_folder_contents(f"{src_PC_path}/{K1_target_name[0]}", f"{dst_PC_path}/PC/{PC_list[0]}")
         f.copy_and_remove_folder(f"{dst_PC_path}/PC/{PC_list[0]}", f"{dst_PC_path}/PC/DCDC/{PC_list[0]}")
@@ -389,9 +395,10 @@ def create_PC(src_PC_path, dst_PC_path, data_index, product_gen):
         gl.logging.info("没有K1-Burner的需求包")
 
 
-
     # K2，复制+修改ini
     K2_target_name = f.find_strings_in_set(gl.K2_target_list, folder_list)
+    if not K2_target_name:
+        K2_target_name = [s for s in folder_list if "K2" in s]
     if K2_target_name:
         f.copy_folder_contents(f"{src_PC_path}/{K2_target_name[0]}", f"{dst_PC_path}/PC/{PC_list[1]}")  
         # 修改ini
@@ -433,8 +440,6 @@ def create_PC(src_PC_path, dst_PC_path, data_index, product_gen):
         # 修改ini
     if "CBI" in folder_list:
         f.copy_folder_contents(f"{src_PC_path}/CBI", f"{dst_PC_path}/PC/{PC_list[6]}")  
-
-
 
 
     # 获取excel中slt数据
